@@ -4,6 +4,10 @@ const ctx = canvas.getContext('2d');
 canvas.width = 800;
 canvas.height = 500;
 
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let bgmInterval = null;
+let isBgmPlaying = false;
+
 const GRAVITY = 0.25;
 const JUMP_FORCE = -10;
 const MAX_FALL_SPEED = 8;
@@ -24,6 +28,87 @@ let lastJumpTime = 0;
 let jumpCount = 0;
 const MAX_JUMPS = 2;
 const DOUBLE_JUMP_TIME = 300;
+
+function playTone(frequency, duration, type = 'sine', volume = 0.1) {
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+    
+    gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + duration);
+}
+
+function startBgm() {
+    if (isBgmPlaying) return;
+    isBgmPlaying = true;
+    
+    const notes = [
+        { freq: 523.25, dur: 0.25 },
+        { freq: 659.25, dur: 0.25 },
+        { freq: 783.99, dur: 0.5 },
+        { freq: 659.25, dur: 0.25 },
+        { freq: 523.25, dur: 0.25 },
+        { freq: 587.33, dur: 0.25 },
+        { freq: 659.25, dur: 0.25 },
+        { freq: 523.25, dur: 0.5 },
+        { freq: 440.00, dur: 0.25 },
+        { freq: 523.25, dur: 0.25 },
+        { freq: 587.33, dur: 0.25 },
+        { freq: 440.00, dur: 0.5 },
+        { freq: 392.00, dur: 0.25 },
+        { freq: 440.00, dur: 0.25 },
+        { freq: 523.25, dur: 0.75 }
+    ];
+    
+    let noteIndex = 0;
+    
+    function playNextNote() {
+        if (!isBgmPlaying) return;
+        
+        const note = notes[noteIndex];
+        playTone(note.freq, note.dur, 'triangle', 0.08);
+        
+        noteIndex = (noteIndex + 1) % notes.length;
+        bgmInterval = setTimeout(playNextNote, note.dur * 1000);
+    }
+    
+    playNextNote();
+}
+
+function stopBgm() {
+    isBgmPlaying = false;
+    if (bgmInterval) {
+        clearTimeout(bgmInterval);
+        bgmInterval = null;
+    }
+}
+
+function playDeathSound() {
+    playTone(150, 0.3, 'sawtooth', 0.2);
+    setTimeout(() => playTone(100, 0.4, 'sawtooth', 0.15), 200);
+}
+
+function speakDeathMessage() {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance('刘千迎，你中不中啊！');
+        utterance.lang = 'zh-CN';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        window.speechSynthesis.speak(utterance);
+    }
+}
 
 const player = {
     x: 200,
@@ -629,6 +714,9 @@ function takeDamage() {
 
 function gameOver() {
     gameState = 'gameover';
+    stopBgm();
+    playDeathSound();
+    speakDeathMessage();
     document.getElementById('final-score').textContent = Math.floor(score);
     document.getElementById('game-over-screen').classList.remove('hidden');
 }
@@ -733,18 +821,29 @@ document.addEventListener('touchend', (e) => {
 }, { passive: false });
 
 function startGame() {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
     initGame();
     gameState = 'playing';
     document.getElementById('start-screen').classList.add('hidden');
+    startBgm();
 }
 
 function restartGame() {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
     initGame();
     gameState = 'playing';
     document.getElementById('game-over-screen').classList.add('hidden');
+    startBgm();
 }
 
 function winRestartGame() {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
     initGame();
     gameState = 'playing';
     document.getElementById('win-screen').classList.add('hidden');
