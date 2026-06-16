@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>刘千迎大冒险</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+    </div>
+    
+    <div id="start-screen" class="overlay">
+        <h1>刘千迎大冒险</h1>
+        <p>帮助迎迎收集金币，躲避障碍！</p>
+        <div class="instructions">
+            <p>💻 电脑: 按空格键跳跃，连按两下二段跳</p>
+            <p>📱 手机: 点击屏幕跳跃，连点两下二段跳</p>
+        </div>
+        <button id="btn-start">开始游戏</button>
+    </div>
+    
+    <div id="game-over-screen" class="overlay hidden">
+        <h1>游戏结束</h1>
+        <p>最终得分: <span id="final-score">0</span></p>
+        <p class="encourage-msg">迎迎不要放弃！嘟嘟为你加油！！</p>
+        <button id="btn-restart">重新开始</button>
+    </div>
+    
+    <div id="win-screen" class="overlay hidden">
+        <h1>恭喜获胜！</h1>
+        <p>最终得分: <span id="win-score">0</span></p>
+        <button id="btn-win-restart">再玩一次</button>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
