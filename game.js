@@ -160,33 +160,39 @@ function saveScore(finalScore) {
 }
 
 function updateHistoryDisplay() {
-    const containers = [
-        { container: document.getElementById('history-container'), list: document.getElementById('history-list') },
-        { container: document.getElementById('history-container-win'), list: document.getElementById('history-list-win') }
-    ];
+    const list = document.getElementById('history-list-popup');
     
-    containers.forEach(({ container, list }) => {
-        if (!container || !list) return;
-        
-        if (historyScores.length === 0) {
-            container.classList.add('hidden');
-            return;
-        }
-        
-        container.classList.remove('hidden');
-        list.innerHTML = '';
-        
-        historyScores.forEach((record, index) => {
-            const li = document.createElement('li');
-            li.className = 'history-item';
-            li.innerHTML = `
-                <span class="history-rank">#${index + 1}</span>
-                <span class="history-score">${record.score}</span>
-                <span class="history-date">${record.date}</span>
-            `;
-            list.appendChild(li);
-        });
+    if (!list) return;
+    
+    list.innerHTML = '';
+    
+    if (historyScores.length === 0) {
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        li.innerHTML = '<span class="no-history">暂无历史记录</span>';
+        list.appendChild(li);
+        return;
+    }
+    
+    historyScores.forEach((record, index) => {
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        li.innerHTML = `
+            <span class="history-rank">#${index + 1}</span>
+            <span class="history-score">${record.score}</span>
+            <span class="history-date">${record.date}</span>
+        `;
+        list.appendChild(li);
     });
+}
+
+function showHistoryPopup() {
+    updateHistoryDisplay();
+    document.getElementById('history-popup').classList.remove('hidden');
+}
+
+function closeHistoryPopup() {
+    document.getElementById('history-popup').classList.add('hidden');
 }
 
 function initGame() {
@@ -929,6 +935,24 @@ document.getElementById('btn-win-restart').addEventListener('click', winRestartG
 document.getElementById('btn-win-restart').addEventListener('touchstart', (e) => {
     e.preventDefault();
     winRestartGame();
+});
+
+document.getElementById('btn-history').addEventListener('click', showHistoryPopup);
+document.getElementById('btn-history').addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    showHistoryPopup();
+});
+
+document.getElementById('btn-history-win').addEventListener('click', showHistoryPopup);
+document.getElementById('btn-history-win').addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    showHistoryPopup();
+});
+
+document.getElementById('btn-close-history').addEventListener('click', closeHistoryPopup);
+document.getElementById('btn-close-history').addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    closeHistoryPopup();
 });
 
 function canvasInteraction() {
