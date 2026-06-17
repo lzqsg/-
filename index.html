@@ -28,24 +28,28 @@
         <p>最终得分: <span id="final-score">0</span></p>
         <p class="encourage-msg">迎迎不要放弃！嘟嘟为你加油！！</p>
         
-        <div id="history-container" class="history-container hidden">
-            <h3>🏆 历史记录</h3>
-            <ul id="history-list"></ul>
+        <div class="btn-group">
+            <button id="btn-history" class="btn-secondary">📊 历史记录</button>
+            <button id="btn-restart">重新开始</button>
         </div>
-        
-        <button id="btn-restart">重新开始</button>
     </div>
     
     <div id="win-screen" class="overlay hidden">
         <h1>恭喜获胜！</h1>
         <p>最终得分: <span id="win-score">0</span></p>
         
-        <div id="history-container-win" class="history-container hidden">
-            <h3>🏆 历史记录</h3>
-            <ul id="history-list-win"></ul>
+        <div class="btn-group">
+            <button id="btn-history-win" class="btn-secondary">📊 历史记录</button>
+            <button id="btn-win-restart">再玩一次</button>
         </div>
-        
-        <button id="btn-win-restart">再玩一次</button>
+    </div>
+    
+    <div id="history-popup" class="popup hidden">
+        <div class="popup-content">
+            <h2>🏆 历史记录</h2>
+            <ul id="history-list-popup"></ul>
+            <button id="btn-close-history">关闭</button>
+        </div>
     </div>
     
     <script src="game.js"></script>
