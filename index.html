@@ -27,12 +27,24 @@
         <h1>游戏结束</h1>
         <p>最终得分: <span id="final-score">0</span></p>
         <p class="encourage-msg">迎迎不要放弃！嘟嘟为你加油！！</p>
+        
+        <div id="history-container" class="history-container hidden">
+            <h3>🏆 历史记录</h3>
+            <ul id="history-list"></ul>
+        </div>
+        
         <button id="btn-restart">重新开始</button>
     </div>
     
     <div id="win-screen" class="overlay hidden">
         <h1>恭喜获胜！</h1>
         <p>最终得分: <span id="win-score">0</span></p>
+        
+        <div id="history-container-win" class="history-container hidden">
+            <h3>🏆 历史记录</h3>
+            <ul id="history-list-win"></ul>
+        </div>
+        
         <button id="btn-win-restart">再玩一次</button>
     </div>
     
