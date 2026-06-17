@@ -22,6 +22,7 @@ let cameraSpeed = 2;
 const BASE_SPEED = 2;
 const MAX_SPEED = 6;
 const WIN_SCORE = 10000;
+const MAX_HISTORY = 10;
 
 let jumpPressed = false;
 let lastJumpTime = 0;
@@ -126,6 +127,67 @@ let particles = [];
 let clouds = [];
 let gameMessage = '';
 let messageOpacity = 0;
+let historyScores = [];
+
+function loadHistory() {
+    try {
+        const saved = localStorage.getItem('gameHistory');
+        if (saved) {
+            historyScores = JSON.parse(saved);
+        }
+    } catch (e) {
+        historyScores = [];
+    }
+}
+
+function saveScore(finalScore) {
+    const record = {
+        score: finalScore,
+        date: new Date().toLocaleString('zh-CN')
+    };
+    
+    historyScores.push(record);
+    historyScores.sort((a, b) => b.score - a.score);
+    historyScores = historyScores.slice(0, MAX_HISTORY);
+    
+    try {
+        localStorage.setItem('gameHistory', JSON.stringify(historyScores));
+    } catch (e) {
+        console.error('Failed to save history');
+    }
+    
+    updateHistoryDisplay();
+}
+
+function updateHistoryDisplay() {
+    const containers = [
+        { container: document.getElementById('history-container'), list: document.getElementById('history-list') },
+        { container: document.getElementById('history-container-win'), list: document.getElementById('history-list-win') }
+    ];
+    
+    containers.forEach(({ container, list }) => {
+        if (!container || !list) return;
+        
+        if (historyScores.length === 0) {
+            container.classList.add('hidden');
+            return;
+        }
+        
+        container.classList.remove('hidden');
+        list.innerHTML = '';
+        
+        historyScores.forEach((record, index) => {
+            const li = document.createElement('li');
+            li.className = 'history-item';
+            li.innerHTML = `
+                <span class="history-rank">#${index + 1}</span>
+                <span class="history-score">${record.score}</span>
+                <span class="history-date">${record.date}</span>
+            `;
+            list.appendChild(li);
+        });
+    });
+}
 
 function initGame() {
     player.x = 200;
@@ -717,6 +779,7 @@ function gameOver() {
     stopBgm();
     playDeathSound();
     speakDeathMessage();
+    saveScore(Math.floor(score));
     document.getElementById('final-score').textContent = Math.floor(score);
     document.getElementById('game-over-screen').classList.remove('hidden');
 }
@@ -725,6 +788,7 @@ function winGame() {
     gameState = 'win';
     gameMessage = '迎迎nb！！！';
     messageOpacity = 1;
+    saveScore(Math.floor(score));
     document.getElementById('win-score').textContent = Math.floor(score);
     document.getElementById('win-screen').classList.remove('hidden');
 }
@@ -883,6 +947,7 @@ canvas.addEventListener('touchstart', (e) => {
     canvasInteraction();
 });
 
+loadHistory();
 initGame();
 gameLoop();
 
